@@ -9,9 +9,10 @@ Servo baseServo;
 Ultrasonic outSonic(12,13);
 int outSonicDist;
 Ultrasonic inSonic(10,11);
+char stream = 0;
 int inSonicDist;
 int inSonicThresh = 4;
-int outSonicThresh = 12;
+int outSonicThresh = 10;
 int box_is_out = 0;
 int continue_after_value_save = 0;
 int prepare_after_box_done = 0;
@@ -51,6 +52,10 @@ void setup(){
 
     pinMode(conveyMotor, OUTPUT);
     prepare_box_servo();
+    //cep_owrum();
+    //yokary_gal();
+    //korobka_gys();
+    starting_state();
 }
 
 
@@ -66,8 +71,6 @@ void inSonicHandler(){
             boxDetected = 1;
 		}
 	}
-    //Serial.print("Box detected_ _____ ");
-    //Serial.println(boxDetected);
 }
 
 
@@ -77,10 +80,42 @@ void readUltrasonics(){
 
     //Serial.print("ConveeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeYYY ___ ");
     //Serial.println(conveyMotorState);
+    Serial.print("ultrasonicsss ___ ");
+    Serial.print(inSonicDist);
+    Serial.print("    ___    ");
+    Serial.println(outSonicDist);
 }
 
 
 void loop(){
+    if (Serial.available()>0){
+        stream = Serial.read();
+        if (stream == '1'){
+            korobka_suysh();
+        }
+        if (stream == '2'){
+            korobka_gys();
+        }
+        if (stream == '3'){
+            korobka_goyber();
+        }
+        if (stream == '4'){
+            yokary_gal();
+        }
+        if (stream == '5'){
+            sag_owrum();
+        }
+        if (stream == '6'){
+            cep_owrum();
+        }
+        if (stream == '7'){
+            one_goymaga_suysh();
+        }
+        if (stream == '8'){
+            korobka_owrul();
+        }
+        
+    }
     readUltrasonics();
     readIrSensors();
 
@@ -158,40 +193,60 @@ void box_in_ready_handler(){
 }
 
 void korobka_suysh(){
+    yokary_gal();
+    delay(200);
     baseServo.write(90);
-    delay(80);
     delay(500);
     frontServo.write(140);
-    delay(80);
     backServo.write(150);
-    delay(80);
 }
 
+void korobka_owrul(){
+    yokary_gal();
+    delay(200);
+    baseServo.write(90);
+}
+
+void one_goymaga_suysh(){
+    backServo.write(130);
+    delay(200);  
+    frontServo.write(163);
+}
+
+void starting_state(){
+    korobka_goyber();
+    korobka_owrul();
+
+}
 void korobka_gys(){
     clawServo.write(45);
-    delay(80);
 }
 
 void korobka_goyber(){
-    clawServo.write(180);
-    delay(80);  
+    clawServo.write(180);  
 }
 
 void yokary_gal(){
-    frontServo.write(150);
-    delay(80);
-    backServo.write(80);
-    delay(80);  
+    //long back_l = millis();
+    backServo.write(10);
+    delay(200);
+    frontServo.write(175);
 }
 
 void sag_owrum(){
-  baseServo.write(160);
-  delay(80);
+    yokary_gal();
+    delay(200);
+  baseServo.write(166);
+  delay(500);
+  one_goymaga_suysh();
 }
 
 void cep_owrum(){
+    yokary_gal();
+    delay(200);
   baseServo.write(20);
-  delay(80);
+  delay(500);
+  one_goymaga_suysh();
 }
 
 void stop_conveyer(){
