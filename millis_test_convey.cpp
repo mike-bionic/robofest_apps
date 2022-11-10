@@ -37,8 +37,14 @@ Servo boxGate;
 
 int conveyMotor = 8;
 int conveyMotorState = 0;
+
+
 int boxDetected = 0;
-int robot_arm_running = 0;
+
+
+
+int korobka_suysh_millis;
+int korobka_suysh_action = 0;
 
 void setup(){
     Serial.begin(9600);
@@ -51,37 +57,10 @@ void setup(){
 
     pinMode(conveyMotor, OUTPUT);
     prepare_box_servo();
+    //cep_owrum();
+    //yokary_gal();
+    //korobka_gys();
     starting_state();
-    delay(1000);
-}
-
-void run_robo_arm(){
-    Serial.print("+++++++++++++ IR value is :");
-    Serial.println(inIrSensor_value_saved);
-    stop_conveyer();
-    robot_arm_running = 1;
-    korobka_suysh();
-    out_box_millis = millis();
-    delay(500);
-    out_box_millis = millis();
-    korobka_gys();
-    out_box_millis = millis();
-    delay(500);
-    out_box_millis = millis();
-    if (inIrSensor_value_saved == 0){
-        cep_owrum();
-    } else {
-        sag_owrum();
-    }
-    out_box_millis = millis();
-    korobka_goyber();
-    out_box_millis = millis();
-    delay(500);
-    out_box_millis = millis();
-    starting_state();
-    robot_arm_running = 0;
-    out_box_detected = 0;
-    boxDetected = 0;
 }
 
 
@@ -93,7 +72,6 @@ void readIrSensors(){
 void inSonicHandler(){
 	if (boxDetected == 0){
 		if (inSonicDist < inSonicThresh){
-            Serial.println("IN Sonic Is DETECTED");
             inIrSensor_value_saved = inIrSensor_value;
             boxDetected = 1;
 		}
@@ -105,27 +83,23 @@ void readUltrasonics(){
     outSonicDist = outSonic.Ranging(CM);
     inSonicDist = inSonic.Ranging(CM);
 
-    Serial.print("                                            conveyer: ___ ");
-    Serial.println(conveyMotorState);
-    Serial.print("ultrasonicsss ___ ");
-    Serial.print(inSonicDist);
-    Serial.print("    ___    ");
-    Serial.println(outSonicDist);
+    //Serial.print("ConveeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeYYY ___ ");
+    //Serial.println(conveyMotorState);
+    //Serial.print("ultrasonicsss ___ ");
+    //Serial.print(inSonicDist);
+    //Serial.print("    ___    ");
+    //Serial.println(outSonicDist);
 }
 
 
 void loop(){
-    //run_robo_arm();
-    if (robot_arm_running){
-        out_box_millis = millis();
-    }
-    
-    //if inIrSensor_value_saved == 1 -> Black box
-    //if inIrSensor_value_saved == 0 -> white box
-    if (Serial.available() > 0){
+    //if inIrSensor_value == 1 -> Black box
+    //if inIrSensor_value == 0 -> white box
+    korobka_suysh();
+    if (Serial.available()>0){
         stream = Serial.read();
         if (stream == '1'){
-            korobka_suysh();
+            korobka_suysh_call();
         }
         if (stream == '2'){
             korobka_gys();
@@ -154,31 +128,25 @@ void loop(){
     readIrSensors();
 
     if (boxDetected == 1){
-        Serial.println("boxDetected == 1");
         if (outSonicDist < outSonicThresh){
-            Serial.println("outSonicDist < outSonicThresh");
-            
-            stop_conveyer();
             out_box_detected = 1;
             out_box_millis = millis();
-            Serial.println("outSonicDist < outSonicThresh out_box_millis = millis()");
+            stop_conveyer();
         }
     }
     if (out_box_detected){
         stop_conveyer();
-        Serial.println("if (out_box_detected)");
+        Serial.println(out_box_millis);
         if (outSonicDist < outSonicThresh){
-            Serial.println("if (out_box_detected) outSonicDist < outSonicThresh");
             out_box_millis = millis();
-            run_robo_arm();
         }
 
-        //if (out_box_millis + 3000 < millis()){
-        //    if (!(outSonicDist < outSonicThresh)){
-        //        out_box_detected = 0;
-        //        boxDetected = 0;
-        //    }
-        //}
+        if (out_box_millis + 2000 < millis()){
+            if (!(outSonicDist < outSonicThresh)){
+                out_box_detected = 0;
+                boxDetected = 0;
+            }
+        }
     }		
 
     if (boxDetected == 0){
@@ -189,7 +157,7 @@ void loop(){
         }
         inSonicHandler();
     }
-    else if (boxDetected == 1 && out_box_detected == 0 && robot_arm_running == 0){
+    else if (boxDetected == 1 && !out_box_detected){
         openGate();
         closeChannel();
         start_conveyer();
@@ -221,14 +189,39 @@ void release_box_servo(){
     boxGate.write(boxGate_openedVal);
 }
 
+void box_in_ready_handler(){
+    if (inSonicDist < inSonicThresh){
+        boxChannel.write(boxChannel_closedVal);
+    }
+    else {
+        if (box_released_mode == 1){
+            start_conveyer();
+        }
+    }
+}
+
+void korobka_suysh_call(){
+    long korobka_suysh_millis = millis();
+    korobka_suysh_action = 1;
+}
 
 void korobka_suysh(){
-    yokary_gal();
-    delay(200);
-    baseServo.write(90);
-    delay(500);
-    frontServo.write(140);
-    backServo.write(150);
+    if (korobka_suysh_action == 1){
+        yokary_gal();
+        Serial.println("action1");
+        if (korobka_suysh_millis + 200 < millis()){
+            baseServo.write(90);
+            Serial.println("action2");
+        }
+        if (korobka_suysh_millis + 700 < millis()){
+            frontServo.write(140);
+            backServo.write(150);
+            Serial.println("action3");
+        }
+        korobka_suysh_action = 0;
+    }
+    //delay(200);
+    //delay(500);
 }
 
 void korobka_owrul(){
@@ -249,7 +242,7 @@ void starting_state(){
 
 }
 void korobka_gys(){
-    clawServo.write(30);
+    clawServo.write(42);
 }
 
 void korobka_goyber(){
@@ -257,7 +250,8 @@ void korobka_goyber(){
 }
 
 void yokary_gal(){
-    backServo.write(65);
+    //long back_l = millis();
+    backServo.write(10);
     delay(200);
     frontServo.write(175);
 }
@@ -268,7 +262,6 @@ void sag_owrum(){
   baseServo.write(166);
   delay(500);
   one_goymaga_suysh();
-  delay(200);
 }
 
 void cep_owrum(){
@@ -281,10 +274,8 @@ void cep_owrum(){
 
 void stop_conveyer(){
     conveyMotorState = 0;
-    digitalWrite(conveyMotor, conveyMotorState);
 }
 
 void start_conveyer(){
     conveyMotorState = 1;
-    digitalWrite(conveyMotor, conveyMotorState);
 }
