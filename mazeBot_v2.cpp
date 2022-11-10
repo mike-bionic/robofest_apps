@@ -37,6 +37,7 @@ void setup(){
     pinMode (B, OUTPUT);
     analogWrite(A, 90);
     analogWrite(B, 90);
+		tama_yetdi = 0;
     //digitalWrite(A,1);
     //digitalWrite(B,1);
 }
@@ -59,7 +60,6 @@ void loop(){
 		}
 		//
 
-		tama_yetdi = 0;
     if (midSonicDist < frontDistThresh){
 			tama_yetdi = 1;
 			//Serial.println("Taaaaaaaaaaaammmmmmmmmmmmmmmmmm");

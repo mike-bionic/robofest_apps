@@ -47,8 +47,7 @@ void loop(){
 
     if (midSonicDist < distThresh){
         tama_yetdi = 1;
-        stop();
-        
+        //stop();        
     }
 
     if (tama_yetdi == 1){
@@ -70,25 +69,25 @@ void loop(){
     Serial.print("____ Tama sag_tarap : _____ ");
     Serial.println(sag_tarap_bosh);
 
-    //if (tama_yetdi == 1 && (cep_tarap_bosh == 1 || sag_tarap_bosh == 1)){
-    //    while (!(midSonicDist < distForwardThresh)){
-    //        midSonicDist = midSonic.Ranging(CM);
-    //        if (cep_tarap_bosh == 1){
-    //            cepe_owrum();
-    //        }
-    //        if (sag_tarap_bosh == 1){
-    //            saga_owrum();
-    //        }
-    //        if (midSonicDist < distForwardThresh){
-    //            tama_yetdi = 0;
-    //            break;
-    //        }
-    //    }
+    if (tama_yetdi == 1 && (cep_tarap_bosh == 1 || sag_tarap_bosh == 1)){
+        while (!(midSonicDist < distForwardThresh)){
+            midSonicDist = midSonic.Ranging(CM);
+            if (cep_tarap_bosh == 1){
+                cepe_owrum();
+            }
+            if (sag_tarap_bosh == 1){
+                saga_owrum();
+            }
+            if (midSonicDist < distForwardThresh){
+                tama_yetdi = 0;
+                break;
+            }
+        }
     
-    //}
-    //else {
-    //    one_yore();
-    //}
+    }
+    else {
+        one_yore();
+    }
 
     log();
     motorRun();

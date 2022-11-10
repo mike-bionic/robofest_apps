@@ -249,7 +249,7 @@ void starting_state(){
 
 }
 void korobka_gys(){
-    clawServo.write(30);
+    clawServo.write(25);
 }
 
 void korobka_goyber(){
