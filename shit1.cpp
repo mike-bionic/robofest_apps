@@ -52,13 +52,10 @@ void setup(){
     pinMode(conveyMotor, OUTPUT);
     prepare_box_servo();
     //sag_owrum();
-    //yokary_gal();
-    //delay(1000);
-    //sag_owrum();
+    //cep_owrum();
+    //one_goymaga_suysh();
     starting_state();
     delay(1000);
-
-
 }
 
 void run_robo_arm(){
@@ -83,18 +80,6 @@ void run_robo_arm(){
     korobka_goyber();
     out_box_millis = millis();
     delay(500);
-    yokary_gal();
-    out_box_millis = millis();
-    delay(200);
-    korobka_gys();
-    out_box_millis = millis();
-    delay(200);
-    one_goymaga_suysh();
-    out_box_millis = millis();
-    delay(200);
-    korobka_goyber();
-    out_box_millis = millis();
-    delay(400);
     out_box_millis = millis();
     starting_state();
     robot_arm_running = 0;
@@ -253,23 +238,23 @@ void release_box_servo(){
 void korobka_suysh(){
     yokary_gal();
     delay(200);
-    baseServo.write(92);
-    delay(200);
-    frontServo.write(130);
-    backServo.write(148);
+    baseServo.write(93);
+    delay(500);
+    frontServo.write(140);
+    backServo.write(150);
 }
 
 void korobka_owrul(){
     yokary_gal();
     delay(200);
-    baseServo.write(92);
+    baseServo.write(93);
     delay(200);
 }
 
 void one_goymaga_suysh(){
-    backServo.write(105);
+    backServo.write(104);
     delay(200);
-    frontServo.write(143);
+    frontServo.write(153);
     delay(200);
 }
 
@@ -279,7 +264,7 @@ void starting_state(){
 
 }
 void korobka_gys(){
-    clawServo.write(10);
+    clawServo.write(60);
     delay(100);
 }
 
@@ -289,15 +274,15 @@ void korobka_goyber(){
 }
 
 void yokary_gal(){
-    backServo.write(70);
+    backServo.write(65);
     delay(200);
-    frontServo.write(157);
+    frontServo.write(165);
 }
 
 void sag_owrum(){
     yokary_gal();
     delay(400);
-    baseServo.write(164);
+    baseServo.write(163);
     delay(800);
     one_goymaga_suysh();
     delay(400);
@@ -306,7 +291,7 @@ void sag_owrum(){
 void cep_owrum(){
     yokary_gal();
     delay(400);
-    baseServo.write(24);
+    baseServo.write(22);
     delay(800);
     one_goymaga_suysh();
     delay(400);

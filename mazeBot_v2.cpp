@@ -1,16 +1,20 @@
 #include "Ultrasonic.h"
 
 Ultrasonic midSonic(12,13);
-Ultrasonic rightSonic(10,11);
-Ultrasonic leftSonic(4,5);
+Ultrasonic leftSonic(10,11);
+Ultrasonic rightSonic(4,5);
 int rightSonicDist;
 int midSonicDist;
 int leftSonicDist;
-int distThresh = 5;
-int frontDistThresh = 10;
+int distThresh = 8;
+int largeDistThresh = 30;
+int bigDistThresh = 25;
+int slowThresh = 8;
+int frontDistThresh = 20;
 int tama_yetdi = 0;
 int sag_tarap_yapyk = 0;
 int cep_tarap_yapyk = 0;
+int motor_speed = 1;
 
 // motor
 #define cep1 3
@@ -35,69 +39,136 @@ void setup(){
     pinMode (sag2, OUTPUT);
     pinMode (A, OUTPUT);
     pinMode (B, OUTPUT);
-    analogWrite(A, 90);
-    analogWrite(B, 90);
 		tama_yetdi = 0;
     //digitalWrite(A,1);
     //digitalWrite(B,1);
 }
 
 void loop(){
+
+	if (motor_speed == 1){
+    analogWrite(A, 105);
+    analogWrite(B, 108);
+	}
+	else if (motor_speed = 2){
+    analogWrite(A, 107);
+    analogWrite(B, 117);
+	}
+
+	//if (motor_speed == 1){
+  //  analogWrite(A, 90);
+  //  analogWrite(B, 90);
+	//}
+	//else if (motor_speed = 2){
+  //  analogWrite(A, 122);
+  //  analogWrite(B, 130);
+	//}
+
     rightSonicDist = rightSonic.Ranging(CM);
     midSonicDist = midSonic.Ranging(CM);
     leftSonicDist = leftSonic.Ranging(CM);
 
 		// Ozbashdak
-		if (leftSonicDist < distThresh){
+		if (leftSonicDist < largeDistThresh){
 			cep_tarap_yapyk = 1;
 		} else {
 			cep_tarap_yapyk = 0;
 		}
-		if (rightSonicDist < distThresh){
+		if (rightSonicDist < largeDistThresh+2){
 			sag_tarap_yapyk = 1;
 		} else {
 			sag_tarap_yapyk = 0;
 		}
 		//
 
-    if (midSonicDist < frontDistThresh){
+    if (midSonicDist < bigDistThresh){
 			tama_yetdi = 1;
 			//Serial.println("Taaaaaaaaaaaammmmmmmmmmmmmmmmmm");
 			//Serial.print("sag_tarap_yapyk ________");
 			//Serial.print(sag_tarap_yapyk);
 			//Serial.print(" _____ cep_tarap_yapyk  ________  ");
 			//Serial.println(cep_tarap_yapyk);
+
+
+
+			//if (leftSonicDist < rightSonicDist){
+			//	motor_speed = 1;
+			//	saga_owrum();
+			//	motorRun();
+			//}
+			//else if (rightSonicDist < leftSonicDist){
+			//	motor_speed = 1;
+			//	cepe_owrum();
+			//	motorRun();
+			//}
+
+
+
 			if (sag_tarap_yapyk == 0 && cep_tarap_yapyk == 1){
 				Serial.println("______________SAGA____________________");
+				motor_speed = 1;
 				saga_owrum();
 				motorRun();
+				delay(100);
+				one_yore();
+				motorRun();
+				delay(100);
 			}
 			else if (cep_tarap_yapyk == 0 && sag_tarap_yapyk == 1){
 				Serial.println("______________CEPE____________________");
+				motor_speed = 1;
 				cepe_owrum();
 				motorRun();
+				delay(100);
+				one_yore();
+				motorRun();
+				delay(100);
 			}
 			else {
 				stop();
 			}
     }
-
-		//while (!tama_yetdi){
-
-		//}
-		else if (midSonicDist > frontDistThresh){
+		else if (midSonicDist > bigDistThresh){
 			tama_yetdi = 0;
-			if (sag_tarap_yapyk == 0 && cep_tarap_yapyk == 1){
+			if (leftSonicDist < slowThresh){
+				motor_speed = 1;
 				slow_saga_owrum();
+				Serial.println("slow_saga_owrum();");
+				motorRun();
+				delay(50);
+				one_yore();
+				motorRun();
+				delay(100);
 			}
-			else if (cep_tarap_yapyk == 0 && sag_tarap_yapyk == 1){
+			else if (rightSonicDist < slowThresh+3){
+				motor_speed = 1;
 				slow_cepe_owrum();
+				Serial.println("slow_cepe_owrum();");
+				motorRun();
+				delay(50);
+				one_yore();
+				motorRun();
+				delay(100);
 			}
+
+
+
+
+			//if (sag_tarap_yapyk == 0 && cep_tarap_yapyk == 1){
+			//	motor_speed = 1;
+			//	slow_saga_owrum();
+			//}
+			//else if (cep_tarap_yapyk == 0 && sag_tarap_yapyk == 1){
+			//	motor_speed = 1;
+			//	slow_cepe_owrum();
+			//}
 			else {
+				motor_speed = 2;
 				one_yore();
 			}
 		}
 		else {
+			motor_speed = 2;
 			one_yore();
 		}
 
