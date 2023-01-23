@@ -1,9 +1,9 @@
-#define sag_1 2
-#define sag_2 3
-#define cep_1 4
-#define cep_2 5
-#define enA 7
-#define enB 6
+#define sag_1 3
+#define sag_2 4
+#define cep_1 5
+#define cep_2 6
+#define enA 2
+#define enB 7
 
 #include <Servo.h>
 Servo myservo;

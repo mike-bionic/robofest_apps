@@ -18,10 +18,10 @@ int motor_speed = 1;
 
 // motor
 #define cep1 3
-#define cep2 7
+#define cep2 6
 #define sag1 8
-#define sag2 2
-#define A 6
+#define sag2 4
+#define A 7
 #define B 9
 
 int sag_1_state = 0;
